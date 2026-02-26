@@ -47,17 +47,17 @@ export async function execute(interaction : ChatInputCommandInteraction) {
 
     const pfEmbed = new EmbedBuilder()
         .setTitle("Print Failure")
-        .setColor("#ff3333")
+        .setColor("#ff1144")
         .setTimestamp()
         .addFields(
             {name:"Printer", value:interaction.options.getString("printer",true)}
         )
 
-    if (interaction.options.getString("print-filename", false) !== undefined) pfEmbed.addFields({ name: "Filename", value: interaction.options.getString("print-filename", false)!}) 
-    if (interaction.options.getString("notes", false) !== undefined) pfEmbed.addFields({ name: "Notes", value: interaction.options.getString("notes", false)!}) 
-    if (interaction.options.getAttachment("image", false) !== undefined) {
-        const image = interaction.options.getAttachment("image", false)
-        pfEmbed.setImage(image!.url)
+    if (interaction.options.getString("print-filename", false) !== null) pfEmbed.addFields({ name: "Filename", value: interaction.options.getString("print-filename", false)!}) 
+    if (interaction.options.getString("notes", false) !== null) pfEmbed.addFields({ name: "Notes", value: interaction.options.getString("notes", false)!}) 
+    if (interaction.options.getAttachment("image", false) !== null) {
+        const image = interaction.options.getAttachment("image", false)!
+        if (image.contentType?.startsWith("image")) pfEmbed.setImage(image!.url)
     }
 
     const logChannelId = process.env.PRINT_LOG_CHANNEL_ID;
