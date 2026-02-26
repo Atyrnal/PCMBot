@@ -1,10 +1,10 @@
 import dotenv from 'dotenv'; dotenv.config();
 import { REST, Routes } from 'discord.js';
-import { readdirSync, writeFileSync, statSync} from 'node:fs';
+import { readdirSync, writeFileSync, statSync, existsSync} from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { Command } from './types.js';
-import { hashCommands } from './utils.js';
+import { hashCommands, loadModules } from './utils.mjs';
 
 export async function refreshSlashCommands() {
   const token = process.env.DISCORD_TOKEN;
@@ -25,19 +25,7 @@ export async function refreshSlashCommands() {
       commands.push(command.data.toJSON())
   }
   const commandFoldersPath = join(__dirname, "commands");
-  const commandFolders = readdirSync(commandFoldersPath);
-  for (const folder of commandFolders) {
-      const commandsPath = join(commandFoldersPath, folder);
-      if (statSync(commandsPath).isDirectory()) {
-          const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
-          for (const file of commandFiles) {
-              const filePath = join(commandsPath, file);
-              await addCommand(filePath)
-          }
-      } else if (commandsPath.endsWith('.ts')) {
-          await addCommand(commandsPath)
-      }
-  }
+  await loadModules(commandFoldersPath, addCommand)
 
   const rest = new REST({ version: '10' }).setToken(token);
 
