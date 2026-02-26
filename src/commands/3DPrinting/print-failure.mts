@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder, GuildTextBasedChannel, MessageFlagsBitField, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
-import { isEmployee } from '../../utils.js'
+import { isEmployee } from '../../utils.mjs'
 
 export const data = new SlashCommandBuilder()
     .setName("print-failure")
