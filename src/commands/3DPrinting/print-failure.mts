@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, GuildTextBasedChannel, MessageFlagsBitField, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
 import { isEmployee } from '../../utils.mjs'
+import { printers } from '../../config.js'
 
 export const data = new SlashCommandBuilder()
     .setName("print-failure")
@@ -7,23 +8,7 @@ export const data = new SlashCommandBuilder()
     .addStringOption((s) => 
         s.setName("printer")
         .setDescription("The printer (name) on which the failure occurred")
-        .setChoices(
-            { name: "Qiao Chi Ji", value: "Qiao Chi Ji (P1S)" },
-            { name: "Yang Yang", value: "Yang Yang (P1S)" },
-            { name: "Kai Kai", value: "Kai Kai (P1S)" },
-            { name: "Xing Xing", value: "Xing Xing (X1C)" },
-            { name: "Po", value: "Po (H2D)" },
-            { name: "Lin Lin", value: "Lin Lin (X1C)" },
-            { name: "CORE One", value: "CORE One"},
-            { name: "MK4 Left", value: "MK4 Left"},
-            { name: "MK4 Center", value: "MK4 Center"},
-            { name: "MK4 Right", value: "MK4 Right"},
-            { name: "MK3S Middle Left", value: "MK3S Middle Left"},
-            { name: "MK3S Middle Right", value: "MK3S Middle Right"},
-            { name: "MK3S Bottom Left", value: "MK3S Bottom Left"},
-            { name: "MK3S Bottom Center", value: "MK3S Bottom Center"},
-            { name: "MK3S Bottom Right", value: "MK3S Bottom Right"}
-        )
+        .setChoices(printers)
         .setRequired(true)
     ).addStringOption((s) => 
         s.setName("print-filename")

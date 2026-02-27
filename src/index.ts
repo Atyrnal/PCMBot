@@ -20,36 +20,34 @@ const client = new Client({ intents: [
 //Create map of commands from files and store to client
 client.commands = new Collection()
 const commands : object[] = []
-const addCommand = async (commandFilePath : string) => {
+const commandFoldersPath = join(__dirname, "commands");
+await loadModules(commandFoldersPath, async (commandFilePath : string) => {
     const command = await import(pathToFileURL(commandFilePath).href) as Command;
     client.commands.set(command.data.name, command);
     commands.push(command.data.toJSON())
-}
-const commandFoldersPath = join(__dirname, "commands");
-await loadModules(commandFoldersPath, addCommand)
+})
+
 //Register event files with client
-const addEvent = async (eventFilePath : string) => {
+const eventFoldersPath = join(__dirname, 'events');
+await loadModules(eventFoldersPath, async (eventFilePath : string) => {
     const event = await import(pathToFileURL(eventFilePath).href) as Event;
     if (event.once) {
         client.once(event.type, (...args) => event.execute(...args));
     } else {
         client.on(event.type, (...args) => event.execute(...args));
     }
-}
-const eventFoldersPath = join(__dirname, 'events');
-await loadModules(eventFoldersPath, addEvent)
+})
 
 //Register non-command interactions (button pressed, modal submitted, etc.)
 client.interactions = new Collection<InteractionType, Collection<string, Interaction>>([
     [InteractionType.MessageComponent, new Collection<string, Interaction>()],
     [InteractionType.ModalSubmit, new Collection<string, Interaction>()]
 ]);
-const addInt = async (intFilePath : string) => {
+const intFoldersPath = join(__dirname, 'interactions');
+await loadModules(intFoldersPath, async (intFilePath : string) => {
     const interaction = await import(pathToFileURL(intFilePath).href) as Interaction;
     client.interactions.get(interaction.data.type)?.set(interaction.data.name, interaction)
-}
-const intFoldersPath = join(__dirname, 'interactions');
-await loadModules(intFoldersPath, addInt);
+});
 
 
 //Make sure loaded commands matches commands registered with Discord

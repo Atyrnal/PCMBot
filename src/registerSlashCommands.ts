@@ -20,12 +20,11 @@ export async function refreshSlashCommands() {
 
   //Create array of commands from files
   const commands : object[] = []
-  const addCommand = async (commandFilePath : string) => {
+  const commandFoldersPath = join(__dirname, "commands");
+  await loadModules(commandFoldersPath, async (commandFilePath : string) => {
       const command = await import(pathToFileURL(commandFilePath).href) as Command;
       commands.push(command.data.toJSON())
-  }
-  const commandFoldersPath = join(__dirname, "commands");
-  await loadModules(commandFoldersPath, addCommand)
+  })
 
   const rest = new REST({ version: '10' }).setToken(token);
 
