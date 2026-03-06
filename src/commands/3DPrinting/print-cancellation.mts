@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder, GuildTextBasedChannel, MessageFlagsBitField, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
+import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
 import { isEmployee } from '../../utils.mjs'
 import { printers } from '../../config.js'
 
@@ -28,7 +28,7 @@ export const data = new SlashCommandBuilder()
     // )
 
 export async function execute(interaction : ChatInputCommandInteraction) {
-    if (!isEmployee(interaction.member)) return interaction.reply({content:"This command is for Employees only.", flags: MessageFlagsBitField.Flags.Ephemeral});
+    if (!isEmployee(interaction.member)) return interaction.reply({content:"This command is for Employees only.", flags: MessageFlags.Ephemeral});
 
     const pcEmbed = new EmbedBuilder()
         .setTitle("Print Canceled")
@@ -53,6 +53,7 @@ export async function execute(interaction : ChatInputCommandInteraction) {
             const permissions = channel.permissionsFor(interaction.guild!.members.me!);
             if (permissions?.has(PermissionFlagsBits.SendMessages) && permissions?.has(PermissionFlagsBits.EmbedLinks)) {
                 channel.send({ embeds: [pcEmbed] });
+                interaction.reply({ content: "Embed sent in <#" + process.env.PRINT_LOG_CHANNEL_ID + ">", embeds: [pcEmbed], flags: MessageFlags.Ephemeral})
                 sent = true
             }
         }

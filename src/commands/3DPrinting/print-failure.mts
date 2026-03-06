@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder, GuildTextBasedChannel, MessageFlagsBitField, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
+import { ChatInputCommandInteraction, EmbedBuilder, GuildTextBasedChannel, MessageFlags, MessageFlagsBitField, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
 import { isEmployee } from '../../utils.mjs'
 import { printers } from '../../config.js'
 
@@ -53,6 +53,7 @@ export async function execute(interaction : ChatInputCommandInteraction) {
             const permissions = channel.permissionsFor(interaction.guild!.members.me!);
             if (permissions?.has(PermissionFlagsBits.SendMessages) && permissions?.has(PermissionFlagsBits.EmbedLinks)) {
                 channel.send({ embeds: [pfEmbed] });
+                interaction.reply({ content: "Embed sent in <#" + process.env.PRINT_LOG_CHANNEL_ID + ">", embeds: [pfEmbed], flags: MessageFlags.Ephemeral})
                 sent = true
             }
         }

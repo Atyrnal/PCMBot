@@ -14,7 +14,7 @@ const TOKEN = process.env.DISCORD_TOKEN;
 
 //Init client
 const client = new Client({ intents: [
-    //GatewayIntentBits.Guilds
+    GatewayIntentBits.Guilds
 ]});
 
 //Create map of commands from files and store to client
