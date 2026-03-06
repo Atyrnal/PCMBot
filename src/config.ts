@@ -1,4 +1,4 @@
-
+//source of truths
 export const printers = [
     { name: "Qiao Chi Ji", value: "Qiao Chi Ji (P1S)" },
     { name: "Yang Yang", value: "Yang Yang (P1S)" },
@@ -7,6 +7,7 @@ export const printers = [
     { name: "Po", value: "Po (H2D)" },
     { name: "Lin Lin", value: "Lin Lin (X1C)" },
     { name: "Simba", value: "Simba (CORE One)"},
+    { name: "Foxy", value: "Foxy (CORE One)"},
     { name: "Tigress", value: "Tigress (MK4)"},
     { name: "Nick Wilde", value: "Nick Wilde (MK4)"},
     { name: "Tony", value: "Tony (MK4)"},
