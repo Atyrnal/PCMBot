@@ -12,7 +12,7 @@ export function execute(client : Client) {
     client.user.setActivity({
         name: (() => {
             const randInt = (min:number, max:number) => (Math.floor(Math.random() * (max - min)) + min)
-            const choices = ["Calibrating ciruits...", "Heating nozzles...", "Priming laser...", "Monitoring radiowaves...", "Compiling libraries...", "Constructing devices..."]
+            const choices = ["Calibrating ciruits...", "Heating nozzles...", "Priming lasers...", "Monitoring radiowaves...", "Compiling libraries...", "Constructing devices..."]
             return choices[randInt(0, choices.length)]
         })(),
         type: 1
