@@ -3,7 +3,7 @@ import { readdirSync, existsSync, readFileSync, statSync } from "fs";
 import { pathToFileURL, fileURLToPath} from "url";
 import { dirname, join } from "path";
 import { Client, Collection, GatewayIntentBits, InteractionType } from 'discord.js';
-import { Command, Interaction, Event } from './types.js';
+import { Command, Interaction, Event, CustomEvent, Service, Integration } from './types.js';
 import { refreshSlashCommands } from './registerSlashCommands.js';
 import { hashCommands, loadModules } from './utils.mjs';
 
@@ -49,6 +49,21 @@ await loadModules(intFoldersPath, async (intFilePath : string) => {
     client.interactions.get(interaction.data.type)?.set(interaction.data.name, interaction)
 });
 
+//Register custom events (Events triggered by external code)
+
+client.customEvents = new Collection<string, CustomEvent>();
+const customFoldersPath = join(__dirname, "custom");
+await loadModules(customFoldersPath, async (cstFilePath: string) => {
+    const cstevent = await import(pathToFileURL(cstFilePath).href) as CustomEvent;
+    client.customEvents.set(cstevent.data.name, cstevent);
+})
+client.triggerCustomEvent = async (eventName: string, ...args : any[]) => {
+    let event;
+    if (!client.customEvents.has(eventName) || (event = client.customEvents.get(eventName)) === undefined) return;
+    event.execute(client, ...args);
+}
+
+
 
 //Make sure loaded commands matches commands registered with Discord
 const savedHash = existsSync(join(__dirname, "commandRegister")) ? readFileSync(join(__dirname, "commandRegister"), "utf-8").trim() : "";
@@ -58,5 +73,24 @@ if (savedHash !== currentHash) {
     await refreshSlashCommands();
 }
 
+//Load integrations
+client.integrations = new Collection();
+const ingFoldersPath = join(__dirname, "integrations")
+await loadModules(ingFoldersPath, async (ingPath) => {
+    const ing = await import(pathToFileURL(ingPath).href) as Integration;
+    await ing.init();
+    client.integrations.set(ing.data.name, ing.api);
+})
+
+
+
+
 client.login(TOKEN);
 console.log("Client logging in...")
+
+//Start services
+const servicesFoldersPath = join(__dirname, "services")
+await loadModules(servicesFoldersPath, async (servicePath) => {
+    const service = await import(pathToFileURL(servicePath).href) as Service;
+    service.start(client);
+})
