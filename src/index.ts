@@ -1,8 +1,9 @@
 import dotenv from 'dotenv'; dotenv.config(); // load .env file
 import { readdirSync, existsSync, readFileSync, statSync } from "fs";
+import { readFile, writeFile } from 'fs/promises';
 import { pathToFileURL, fileURLToPath} from "url";
 import { dirname, join } from "path";
-import { Client, Collection, GatewayIntentBits, InteractionType } from 'discord.js';
+import { Client, Collection, GatewayIntentBits, InteractionType, Partials } from 'discord.js';
 import { Command, Interaction, Event, CustomEvent, Service, Integration } from './types.js';
 import { refreshSlashCommands } from './registerSlashCommands.js';
 import { hashCommands, loadModules } from './utils.mjs';
@@ -14,8 +15,12 @@ const TOKEN = process.env.DISCORD_TOKEN;
 
 //Init client
 const client = new Client({ intents: [
-    GatewayIntentBits.Guilds
-]});
+    GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions
+], partials: [Partials.Message, Partials.Channel, Partials.Reaction]});
+
+//Create non-persistent datastores
+client.datastores = new Collection()
+client.datastores.set("verificationCodes", new Collection<string, { email:string, code:string}>())
 
 //Create map of commands from files and store to client
 client.commands = new Collection()
@@ -81,8 +86,6 @@ await loadModules(ingFoldersPath, async (ingPath) => {
     await ing.init();
     client.integrations.set(ing.data.name, ing.api);
 })
-
-
 
 
 client.login(TOKEN);
