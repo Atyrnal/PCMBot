@@ -6,10 +6,10 @@ const emailRegex = /^[-A-Za-z0-9!#$%&'*+\/=?^_`{|}~]+(?:\.[-A-Za-z0-9!#$%&'*+\/=
 export const data = { name:"link-emailModal", type:InteractionType.ModalSubmit }
 export async function execute(interaction : ModalSubmitInteraction) {
     await interaction.deferReply();
-    const email = interaction.fields.getTextInputValue("link-emailModal-emailInput");
+    const email = interaction.fields.getTextInputValue("link-emailModal-emailInput").toLowerCase();
     if (!emailRegex.test(email)) return interaction.followUp({ content: "Invalid Email. Please try again.", flags: MessageFlags.Ephemeral})
     const airtable = interaction.client.integrations.get("airtable") as AirtableBase;
-    const records = await airtable.table("Users").select({filterByFormula: `OR({Primary Email} = "${email}", {Alternate Email} = "${email}")`}).firstPage()
+    const records = await airtable.table("Users").select({filterByFormula: `OR(LOWER({Primary Email}) = LOWER("${email}"), LOWER({Alternate Email}) = LOWER("${email}"))`}).firstPage()
     const record = records[0];
     let exists = true;
     let linked = false;
@@ -34,7 +34,7 @@ export async function execute(interaction : ModalSubmitInteraction) {
     try {
         const google = interaction.client.integrations.get('google') as GoogleAPI;
         const fullname = record.get('First Name') + " " + record.get('Last Name');
-        const message = `Hello ${fullname},<br><br>` + 
+        const message = `Hello ${fullname.split(" ")[0]},<br><br>` + 
             `You are recieving this email because you requested to link your PCM account to Discord.<br><br>` +
             `Your verification code is:<br>` +
             `<b>${verCode}</b><br><br>` +

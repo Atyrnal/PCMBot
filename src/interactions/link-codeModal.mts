@@ -32,7 +32,7 @@ export async function execute(interaction : ModalSubmitInteraction) {
     } else {
         await interaction.deferReply()
         const airtable = interaction.client.integrations.get("airtable") as AirtableBase;
-        const records = await airtable.table("Users").select({filterByFormula: `OR({Primary Email} = "${dsEntry.email}", {Alternate Email} = "${dsEntry.email}")`}).firstPage()
+        const records = await airtable.table("Users").select({filterByFormula: `OR(LOWER({Primary Email}) = LOWER("${dsEntry.email}"), LOWER({Alternate Email}) = LOWER("${dsEntry.email}"))`}).firstPage()
         const record = records[0];
         if (record === undefined) return interaction.followUp("There is no PCM Account associated with this email. Please register the next time you come to the PCM.");
         if(record.get("Discord ID") !== undefined) return interaction.followUp({ content: "A Discord account is already linked for this user!"});
